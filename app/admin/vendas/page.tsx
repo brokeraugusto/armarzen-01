@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import type { Sale, SaleItem } from "@/lib/types"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import { GlassButton } from "@/components/ui/glass-button"
+import { GlassCard } from "@/components/ui/glass-card"
+import { GlassInput } from "@/components/ui/glass-input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { ArrowLeft, Eye, Search, Download } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { ArrowLeft, Eye, Search, Download, Loader2, ShoppingCart } from "lucide-react"
 import Link from "next/link"
 
 interface SaleWithItems extends Sale {
@@ -27,6 +28,7 @@ export default function VendasAdmin() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedSale, setSelectedSale] = useState<SaleWithItems | null>(null)
   const [showDetails, setShowDetails] = useState(false)
+  const [error, setError] = useState("")
 
   useEffect(() => {
     fetchSales()
@@ -50,6 +52,8 @@ export default function VendasAdmin() {
       setSales(data || [])
     } catch (error) {
       console.error("Error fetching sales:", error)
+      setError("Erro ao carregar vendas")
+      setTimeout(() => setError(""), 3000)
     } finally {
       setLoading(false)
     }
@@ -65,17 +69,9 @@ export default function VendasAdmin() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved":
-        return (
-          <Badge variant="default" className="bg-green-100 text-green-800">
-            Aprovado
-          </Badge>
-        )
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Aprovado</Badge>
       case "pending":
-        return (
-          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-            Pendente
-          </Badge>
-        )
+        return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Pendente</Badge>
       case "cancelled":
         return <Badge variant="destructive">Cancelado</Badge>
       default:
@@ -105,44 +101,53 @@ export default function VendasAdmin() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando vendas...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+        <GlassCard className="p-8 text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-400 mx-auto mb-4" />
+          <p className="text-slate-300">Carregando vendas...</p>
+        </GlassCard>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/admin">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Voltar
-                </Button>
-              </Link>
-              <h1 className="text-2xl font-bold">Histórico de Vendas</h1>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <header className="border-b border-slate-700/30">
+        <GlassCard variant="elevated" className="rounded-none border-x-0 border-t-0">
+          <div className="max-w-7xl mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Link href="/admin">
+                  <GlassButton variant="ghost" size="sm">
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Voltar
+                  </GlassButton>
+                </Link>
+                <h1 className="text-2xl font-bold text-slate-200">Histórico de Vendas</h1>
+              </div>
 
-            <Button variant="outline">
-              <Download className="w-4 h-4 mr-2" />
-              Exportar
-            </Button>
+              <GlassButton variant="outline">
+                <Download className="w-4 h-4 mr-2" />
+                Exportar
+              </GlassButton>
+            </div>
           </div>
-        </div>
+        </GlassCard>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        {/* Alert */}
+        {error && (
+          <Alert variant="destructive" className="mb-6 bg-red-500/10 border-red-500/30 backdrop-blur-md">
+            <AlertDescription className="text-red-400">{error}</AlertDescription>
+          </Alert>
+        )}
+
         {/* Filtros */}
-        <div className="mb-6">
+        <GlassCard className="p-4 mb-6">
           <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <Input
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+            <GlassInput
               type="text"
               placeholder="Buscar por número, email ou telefone..."
               value={searchTerm}
@@ -150,156 +155,161 @@ export default function VendasAdmin() {
               className="pl-10"
             />
           </div>
-        </div>
+        </GlassCard>
 
         {/* Tabela de Vendas */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Vendas ({filteredSales.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Número</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Valor</TableHead>
-                  <TableHead>Pagamento</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredSales.map((sale) => (
-                  <TableRow key={sale.id}>
-                    <TableCell className="font-medium">{sale.sale_number}</TableCell>
-                    <TableCell>{new Date(sale.created_at).toLocaleString("pt-BR")}</TableCell>
-                    <TableCell>
-                      <div>
-                        {sale.customer_email && <p className="text-sm">{sale.customer_email}</p>}
-                        {sale.customer_phone && <p className="text-sm text-gray-600">{sale.customer_phone}</p>}
-                        {!sale.customer_email && !sale.customer_phone && (
-                          <span className="text-gray-400">Cliente não informado</span>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-bold text-green-600">R$ {sale.total_amount.toFixed(2)}</TableCell>
-                    <TableCell>{getPaymentMethodLabel(sale.payment_method)}</TableCell>
-                    <TableCell>{getStatusBadge(sale.payment_status)}</TableCell>
-                    <TableCell>
-                      <Button size="sm" variant="outline" onClick={() => viewSaleDetails(sale)}>
-                        <Eye className="w-4 h-4 mr-1" />
-                        Ver
-                      </Button>
-                    </TableCell>
+        <GlassCard>
+          <div className="p-6">
+            <h2 className="text-lg font-semibold text-slate-200 mb-4">Vendas ({filteredSales.length})</h2>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-slate-700/50">
+                    <TableHead className="text-slate-300">Número</TableHead>
+                    <TableHead className="text-slate-300">Data</TableHead>
+                    <TableHead className="text-slate-300">Cliente</TableHead>
+                    <TableHead className="text-slate-300">Valor</TableHead>
+                    <TableHead className="text-slate-300">Pagamento</TableHead>
+                    <TableHead className="text-slate-300">Status</TableHead>
+                    <TableHead className="text-slate-300">Ações</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredSales.map((sale) => (
+                    <TableRow key={sale.id} className="border-slate-700/30 hover:bg-slate-800/20">
+                      <TableCell className="font-medium text-slate-200">{sale.sale_number}</TableCell>
+                      <TableCell className="text-slate-300">
+                        {new Date(sale.created_at).toLocaleString("pt-BR")}
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          {sale.customer_email && <p className="text-sm text-slate-300">{sale.customer_email}</p>}
+                          {sale.customer_phone && <p className="text-sm text-slate-400">{sale.customer_phone}</p>}
+                          {!sale.customer_email && !sale.customer_phone && (
+                            <span className="text-slate-500">Cliente não informado</span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-bold text-green-400">R$ {sale.total_amount.toFixed(2)}</TableCell>
+                      <TableCell className="text-slate-300">{getPaymentMethodLabel(sale.payment_method)}</TableCell>
+                      <TableCell>{getStatusBadge(sale.payment_status)}</TableCell>
+                      <TableCell>
+                        <GlassButton size="sm" variant="outline" onClick={() => viewSaleDetails(sale)}>
+                          <Eye className="w-4 h-4 mr-1" />
+                          Ver
+                        </GlassButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
 
-            {filteredSales.length === 0 && (
-              <div className="text-center py-8">
-                <p className="text-gray-500">{searchTerm ? "Nenhuma venda encontrada" : "Nenhuma venda registrada"}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              {filteredSales.length === 0 && (
+                <div className="text-center py-8">
+                  <ShoppingCart className="w-12 h-12 mx-auto text-slate-500 mb-4" />
+                  <p className="text-slate-400">
+                    {searchTerm ? "Nenhuma venda encontrada" : "Nenhuma venda registrada"}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </GlassCard>
 
         {/* Modal de Detalhes da Venda */}
         <Dialog open={showDetails} onOpenChange={setShowDetails}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-900/95 backdrop-blur-md border-slate-700/50">
             <DialogHeader>
-              <DialogTitle>Detalhes da Venda - {selectedSale?.sale_number}</DialogTitle>
+              <DialogTitle className="text-slate-200">Detalhes da Venda - {selectedSale?.sale_number}</DialogTitle>
             </DialogHeader>
 
             {selectedSale && (
               <div className="space-y-6">
                 {/* Informações da Venda */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-semibold mb-2">Informações Gerais</h4>
+                  <GlassCard variant="subtle" className="p-4">
+                    <h4 className="font-semibold mb-2 text-slate-200">Informações Gerais</h4>
                     <div className="space-y-1 text-sm">
-                      <p>
+                      <p className="text-slate-300">
                         <strong>Número:</strong> {selectedSale.sale_number}
                       </p>
-                      <p>
+                      <p className="text-slate-300">
                         <strong>Data:</strong> {new Date(selectedSale.created_at).toLocaleString("pt-BR")}
                       </p>
-                      <p>
+                      <p className="text-slate-300">
                         <strong>Status:</strong> {getStatusBadge(selectedSale.payment_status)}
                       </p>
-                      <p>
+                      <p className="text-slate-300">
                         <strong>Pagamento:</strong> {getPaymentMethodLabel(selectedSale.payment_method)}
                       </p>
                       {selectedSale.mercadopago_payment_id && (
-                        <p>
+                        <p className="text-slate-300">
                           <strong>ID Mercado Pago:</strong> {selectedSale.mercadopago_payment_id}
                         </p>
                       )}
                     </div>
-                  </div>
+                  </GlassCard>
 
-                  <div>
-                    <h4 className="font-semibold mb-2">Cliente</h4>
+                  <GlassCard variant="subtle" className="p-4">
+                    <h4 className="font-semibold mb-2 text-slate-200">Cliente</h4>
                     <div className="space-y-1 text-sm">
                       {selectedSale.customer_email ? (
-                        <p>
+                        <p className="text-slate-300">
                           <strong>Email:</strong> {selectedSale.customer_email}
                         </p>
                       ) : (
-                        <p className="text-gray-500">Email não informado</p>
+                        <p className="text-slate-500">Email não informado</p>
                       )}
                       {selectedSale.customer_phone ? (
-                        <p>
+                        <p className="text-slate-300">
                           <strong>Telefone:</strong> {selectedSale.customer_phone}
                         </p>
                       ) : (
-                        <p className="text-gray-500">Telefone não informado</p>
+                        <p className="text-slate-500">Telefone não informado</p>
                       )}
                     </div>
-                  </div>
+                  </GlassCard>
                 </div>
 
                 {/* Itens da Venda */}
-                <div>
-                  <h4 className="font-semibold mb-3">Itens da Venda</h4>
+                <GlassCard variant="subtle" className="p-4">
+                  <h4 className="font-semibold mb-3 text-slate-200">Itens da Venda</h4>
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead>Produto</TableHead>
-                        <TableHead>Qtd</TableHead>
-                        <TableHead>Preço Unit.</TableHead>
-                        <TableHead>Total</TableHead>
+                      <TableRow className="border-slate-700/50">
+                        <TableHead className="text-slate-300">Produto</TableHead>
+                        <TableHead className="text-slate-300">Qtd</TableHead>
+                        <TableHead className="text-slate-300">Preço Unit.</TableHead>
+                        <TableHead className="text-slate-300">Total</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {selectedSale.sale_items.map((item) => (
-                        <TableRow key={item.id}>
-                          <TableCell>{item.product.name}</TableCell>
-                          <TableCell>{item.quantity}</TableCell>
-                          <TableCell>R$ {item.unit_price.toFixed(2)}</TableCell>
-                          <TableCell className="font-medium">R$ {item.total_price.toFixed(2)}</TableCell>
+                        <TableRow key={item.id} className="border-slate-700/30">
+                          <TableCell className="text-slate-300">{item.product.name}</TableCell>
+                          <TableCell className="text-slate-300">{item.quantity}</TableCell>
+                          <TableCell className="text-slate-300">R$ {item.unit_price.toFixed(2)}</TableCell>
+                          <TableCell className="font-medium text-slate-200">R$ {item.total_price.toFixed(2)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
-                </div>
+                </GlassCard>
 
                 {/* Total */}
-                <div className="border-t pt-4">
+                <GlassCard variant="subtle" className="p-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">Total da Venda:</span>
-                    <span className="text-2xl font-bold text-green-600">R$ {selectedSale.total_amount.toFixed(2)}</span>
+                    <span className="text-lg font-semibold text-slate-200">Total da Venda:</span>
+                    <span className="text-2xl font-bold text-green-400">R$ {selectedSale.total_amount.toFixed(2)}</span>
                   </div>
-                </div>
+                </GlassCard>
 
                 {/* Observações */}
                 {selectedSale.notes && (
-                  <div>
-                    <h4 className="font-semibold mb-2">Observações</h4>
-                    <p className="text-sm bg-gray-50 p-3 rounded">{selectedSale.notes}</p>
-                  </div>
+                  <GlassCard variant="subtle" className="p-4">
+                    <h4 className="font-semibold mb-2 text-slate-200">Observações</h4>
+                    <p className="text-sm text-slate-300">{selectedSale.notes}</p>
+                  </GlassCard>
                 )}
               </div>
             )}

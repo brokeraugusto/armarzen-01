@@ -20,10 +20,14 @@ export interface Product {
   category_id?: string
   image_url?: string
   barcode?: string
+  sku?: string
+  supplier?: string
+  notes?: string
   is_active: boolean
   created_at: string
   updated_at: string
   category?: Category
+  stock_movements?: StockMovement[]
 }
 
 export interface CartItem {
@@ -105,4 +109,66 @@ export interface Settings {
   stock_alert_webhook: string
   sale_webhook: string
   daily_summary_webhook: string
+}
+
+// MercadoPago Point Types
+export interface MPPointTerminal {
+  id: string
+  pos_id: number
+  store_id: string
+  external_pos_id: string
+  operating_mode: "PDV" | "STANDALONE" | "UNDEFINED"
+  name?: string
+  status?: "online" | "offline" | "busy"
+}
+
+export interface MPPointPayment {
+  id: string
+  terminal_id: string
+  amount: number
+  description: string
+  external_reference: string
+  status: "pending" | "approved" | "cancelled" | "rejected"
+  payment_id?: string
+  created_at: string
+  updated_at: string
+  error_message?: string
+}
+
+export interface MPPointPaymentRequest {
+  terminal_id: string
+  amount: number
+  description: string
+  external_reference: string
+  notification_url?: string
+}
+
+export interface MPPointPaymentResponse {
+  id: string
+  status: "pending" | "approved" | "cancelled" | "rejected"
+  payment_id?: string
+  error_code?: string
+  error_message?: string
+}
+
+// Product Import/Export Types
+export interface ProductImportResult {
+  success: number
+  errors: string[]
+  duplicates: string[]
+  warnings: string[]
+}
+
+export interface BulkActionRequest {
+  action: "delete" | "activate" | "updateCategory" | "adjustPrice" | "adjustStock"
+  productIds: string[]
+  categoryId?: string
+  priceAdjustment?: {
+    percentage?: number
+    fixed?: number
+  }
+  stockAdjustment?: {
+    type: "set" | "add" | "subtract"
+    quantity: number
+  }
 }

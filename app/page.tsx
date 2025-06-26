@@ -76,7 +76,7 @@ export default function HomePage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
         <GlassCard className="p-8 text-center">
-          <Icons.loader className="w-12 h-12 animate-spin text-blue-400 mx-auto mb-4" />
+          <Icons.loader className="w-8 h-8 animate-spin text-blue-400 mx-auto mb-4" />
           <p className="text-slate-300">Carregando produtos...</p>
         </GlassCard>
       </div>
@@ -152,7 +152,9 @@ export default function HomePage() {
                   onClick={() => setSelectedCategory("all")}
                   className="w-full justify-start"
                 >
-                  <Icons.package className="w-4 h-4 mr-3" />
+                  <div className="mr-3 w-6 h-6 flex items-center justify-center">
+                    <Icons.package className="w-4 h-4" />
+                  </div>
                   Todos os Produtos
                   <Badge variant="secondary" className="ml-auto bg-slate-700/60 text-slate-300 border-0">
                     {products.length}
@@ -168,7 +170,13 @@ export default function HomePage() {
                       onClick={() => setSelectedCategory(category.id)}
                       className="w-full justify-start"
                     >
-                      <span className="mr-3 text-lg">{category.icon || "📦"}</span>
+                      <div className="mr-3 w-6 h-6 flex items-center justify-center">
+                        {category.icon ? (
+                          <span className="text-base leading-none">{category.icon}</span>
+                        ) : (
+                          <Icons.package className="w-4 h-4" />
+                        )}
+                      </div>
                       {category.name}
                       <Badge variant="secondary" className="ml-auto bg-slate-700/60 text-slate-300 border-0">
                         {categoryProducts.length}
@@ -299,7 +307,7 @@ export default function HomePage() {
 
           {filteredProducts.length === 0 && (
             <GlassCard className="p-12 text-center">
-              <Icons.search className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+              <Icons.search className="w-12 h-12 text-slate-500 mx-auto mb-4" />
               <p className="text-slate-400 text-lg">
                 {searchTerm ? "Nenhum produto encontrado" : "Nenhum produto disponível"}
               </p>

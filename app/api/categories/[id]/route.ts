@@ -50,7 +50,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         is_active: is_active !== undefined ? is_active : true,
       })
       .eq("id", params.id)
-      .select()
+      .select("*")
       .single()
 
     if (error) {
@@ -79,7 +79,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       .from("categories")
       .update({ is_active: false })
       .eq("id", params.id)
-      .select()
+      .select("*")
       .single()
 
     if (error) {

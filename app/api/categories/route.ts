@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
           color: color || "#3B82F6",
         },
       ])
-      .select()
+      .select("*")
       .single()
 
     if (error) {

@@ -3,14 +3,14 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { GlassButton } from "@/components/ui/glass-button"
+import { GlassInput } from "@/components/ui/glass-input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Save, X, Palette } from "lucide-react"
 import type { Category } from "@/lib/types"
+import { GlassCard } from "@/components/ui/glass-card"
 
 interface CategoryFormProps {
   category?: Category
@@ -30,7 +30,175 @@ const colorOptions = [
   { name: "Teal", value: "#14B8A6" },
 ]
 
-const iconOptions = ["📱", "💻", "🎮", "📚", "👕", "🍔", "🏠", "🚗", "⚽", "🎵", "🎨", "🔧", "💊", "🌱", "🎁", "📦"]
+const iconOptions = [
+  // Eletrônicos e Tecnologia
+  "📱",
+  "💻",
+  "🖥️",
+  "⌚",
+  "📷",
+  "🎧",
+  "🔌",
+  "💡",
+  "🔋",
+  "📺",
+
+  // Entretenimento e Mídia
+  "🎮",
+  "🎵",
+  "🎬",
+  "📚",
+  "🎨",
+  "🎯",
+  "🎲",
+  "🎪",
+  "🎭",
+  "🎤",
+
+  // Roupas e Acessórios
+  "👕",
+  "👔",
+  "👗",
+  "👠",
+  "👟",
+  "🧢",
+  "👜",
+  "💍",
+  "⌚",
+  "🕶️",
+
+  // Casa e Decoração
+  "🏠",
+  "🛋️",
+  "🛏️",
+  "🪑",
+  "🚿",
+  "🧴",
+  "🕯️",
+  "🖼️",
+  "🪴",
+  "🧹",
+
+  // Alimentação e Bebidas
+  "🍔",
+  "🍕",
+  "🍰",
+  "☕",
+  "🍷",
+  "🥤",
+  "🍎",
+  "🥖",
+  "🧀",
+  "🍫",
+
+  // Esportes e Fitness
+  "⚽",
+  "🏀",
+  "🎾",
+  "🏈",
+  "🏐",
+  "🏓",
+  "🏸",
+  "🥊",
+  "🏋️",
+  "🚴",
+
+  // Saúde e Beleza
+  "💊",
+  "🩺",
+  "💄",
+  "🧴",
+  "🧼",
+  "🪥",
+  "💅",
+  "🧴",
+  "🧽",
+  "🪒",
+
+  // Automóveis e Transporte
+  "🚗",
+  "🏍️",
+  "🚲",
+  "🛴",
+  "⛽",
+  "🔧",
+  "🛞",
+  "🚙",
+  "🚕",
+  "🚌",
+
+  // Jardinagem e Plantas
+  "🌱",
+  "🌸",
+  "🌺",
+  "🌻",
+  "🌿",
+  "🪴",
+  "🌳",
+  "🌲",
+  "🍃",
+  "🌾",
+
+  // Presentes e Festas
+  "🎁",
+  "🎈",
+  "🎂",
+  "🎉",
+  "🎊",
+  "🎀",
+  "💝",
+  "🛍️",
+  "🎄",
+  "🎃",
+
+  // Escritório e Papelaria
+  "📦",
+  "📝",
+  "✏️",
+  "📊",
+  "📋",
+  "📌",
+  "📎",
+  "🗂️",
+  "📁",
+  "🖊️",
+
+  // Ferramentas e Construção
+  "🔧",
+  "🔨",
+  "⚒️",
+  "🪚",
+  "🔩",
+  "⚙️",
+  "🪛",
+  "📏",
+  "🔒",
+  "🗝️",
+
+  // Animais e Pets
+  "🐶",
+  "🐱",
+  "🐹",
+  "🐰",
+  "🐦",
+  "🐠",
+  "🦎",
+  "🐢",
+  "🦔",
+  "🐾",
+
+  // Viagem e Turismo
+  "✈️",
+  "🧳",
+  "🗺️",
+  "📍",
+  "🏖️",
+  "⛰️",
+  "🏕️",
+  "🎒",
+  "📸",
+  "🧭",
+]
 
 export function CategoryForm({ category, onSave, onCancel, isLoading }: CategoryFormProps) {
   const [formData, setFormData] = useState({
@@ -109,9 +277,9 @@ export function CategoryForm({ category, onSave, onCancel, isLoading }: Category
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <GlassCard className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="flex items-center text-slate-700">
+        <CardTitle className="flex items-center text-white">
           <Palette className="w-5 h-5 mr-2 text-blue-600" />
           {category ? "Editar Categoria" : "Nova Categoria"}
         </CardTitle>
@@ -119,35 +287,35 @@ export function CategoryForm({ category, onSave, onCancel, isLoading }: Category
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           {errors.submit && (
-            <Alert variant="destructive">
-              <AlertDescription>{errors.submit}</AlertDescription>
+            <Alert variant="destructive" className="bg-red-500/10 backdrop-blur-sm border-red-500/20">
+              <AlertDescription className="text-red-200">{errors.submit}</AlertDescription>
             </Alert>
           )}
 
           <div className="space-y-2">
             <Label htmlFor="name">Nome da Categoria *</Label>
-            <Input
+            <GlassInput
               id="name"
               value={formData.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
               placeholder="Ex: Eletrônicos, Roupas, Livros..."
               className={errors.name ? "border-red-500" : ""}
             />
-            {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+            {errors.name && <p className="text-sm text-red-400">{errors.name}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="description">Descrição</Label>
-            <Textarea
+            <textarea
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
               placeholder="Descrição opcional da categoria..."
               rows={3}
-              className={errors.description ? "border-red-500" : ""}
+              className={`bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder:text-slate-400 ${errors.description ? "border-red-500" : ""}`}
             />
-            {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
-            <p className="text-xs text-slate-500">{formData.description.length}/500 caracteres</p>
+            {errors.description && <p className="text-sm text-red-400">{errors.description}</p>}
+            <p className="text-xs text-slate-300">{formData.description.length}/500 caracteres</p>
           </div>
 
           <div className="space-y-2">
@@ -158,15 +326,15 @@ export function CategoryForm({ category, onSave, onCancel, isLoading }: Category
                   key={icon}
                   type="button"
                   onClick={() => handleInputChange("icon", icon)}
-                  className={`p-2 text-xl border rounded-md hover:bg-blue-50 transition-colors ${
-                    formData.icon === icon ? "border-blue-500 bg-blue-50" : "border-gray-200"
+                  className={`p-2 text-xl border rounded-md hover:bg-white/20 transition-colors backdrop-blur-sm ${
+                    formData.icon === icon ? "border-blue-400 bg-white/20" : "border-white/20 bg-white/5"
                   }`}
                 >
                   {icon}
                 </button>
               ))}
             </div>
-            <Input
+            <GlassInput
               value={formData.icon}
               onChange={(e) => handleInputChange("icon", e.target.value)}
               placeholder="Ou digite um emoji personalizado"
@@ -182,8 +350,8 @@ export function CategoryForm({ category, onSave, onCancel, isLoading }: Category
                   key={color.value}
                   type="button"
                   onClick={() => handleInputChange("color", color.value)}
-                  className={`p-3 rounded-md border-2 transition-all ${
-                    formData.color === color.value ? "border-gray-400 scale-105" : "border-gray-200"
+                  className={`p-3 rounded-md border-2 transition-all backdrop-blur-sm ${
+                    formData.color === color.value ? "border-white/60 scale-105" : "border-white/20"
                   }`}
                   style={{ backgroundColor: color.value }}
                 >
@@ -191,7 +359,7 @@ export function CategoryForm({ category, onSave, onCancel, isLoading }: Category
                 </button>
               ))}
             </div>
-            <Input
+            <GlassInput
               type="color"
               value={formData.color}
               onChange={(e) => handleInputChange("color", e.target.value)}
@@ -200,7 +368,7 @@ export function CategoryForm({ category, onSave, onCancel, isLoading }: Category
           </div>
 
           <div className="flex items-center space-x-4 pt-4">
-            <Button type="submit" disabled={saving || isLoading} className="bg-blue-600 hover:bg-blue-700">
+            <GlassButton type="submit" disabled={saving || isLoading} variant="primary">
               {saving ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -212,14 +380,14 @@ export function CategoryForm({ category, onSave, onCancel, isLoading }: Category
                   {category ? "Atualizar" : "Criar"} Categoria
                 </>
               )}
-            </Button>
-            <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
+            </GlassButton>
+            <GlassButton type="button" variant="outline" onClick={onCancel} disabled={saving}>
               <X className="w-4 h-4 mr-2" />
               Cancelar
-            </Button>
+            </GlassButton>
           </div>
         </form>
       </CardContent>
-    </Card>
+    </GlassCard>
   )
 }
